@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.9.22"
     id("io.ktor.plugin") version "2.3.3"
+    kotlin("plugin.serialization") version "1.8.0" // Ensure this line exists
     application
 }
 
@@ -18,6 +19,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")
     implementation("io.ktor:ktor-client-core:2.x.x") // Core Ktor client
     implementation("io.ktor:ktor-client-cio:2.x.x") 
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.x.x")
 
     testImplementation("io.ktor:ktor-server-tests:2.3.3")
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.22")

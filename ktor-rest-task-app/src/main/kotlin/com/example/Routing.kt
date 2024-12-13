@@ -11,13 +11,13 @@ import kotlinx.serialization.json.Json
 
 // Simulated data store for messages
 val messages = mutableListOf(
-    Message(1, "Hello from CyberPi!"),
-    Message(2, "System is running smoothly.")
+    Message("Hello from CyberPi!"),
+    Message("System is running smoothly.")
 )
 
 // Define Message data class for serialization
 @Serializable
-data class Message(val id: Int, val content: String)
+data class Message(val content: String)
 
 fun Application.configureRouting() {
     routing {
@@ -33,14 +33,23 @@ fun Application.configureRouting() {
         // Endpoint to add a message
         post("/send_message") {
             try {
-                // Expecting a JSON payload
-                val messageRequest = call.receive<Message>()
-                // Create a new message with a unique ID
-                val newMessage = Message(messages.size + 1, messageRequest.content)
-                // Add the new message to the list
+                // Log raw request body
+                val rawRequest = call.receiveText()
+                println("Raw request body: $rawRequest")
+                
+                // Attempt to parse the JSON payload
+                val messageRequest = Json.decodeFromString<Message>(rawRequest)
+                println("Parsed message: $messageRequest")
+                
+                // Add the message to the list
+                val newMessage = Message(messageRequest.content)
                 messages.add(newMessage)
+                println("Message successfully added: $newMessage")
+                
                 call.respond(HttpStatusCode.Created, "Message added successfully.")
             } catch (e: Exception) {
+                println("Error occurred: ${e.message}")
+                e.printStackTrace()
                 call.respond(HttpStatusCode.BadRequest, "Invalid request payload.")
             }
         }
