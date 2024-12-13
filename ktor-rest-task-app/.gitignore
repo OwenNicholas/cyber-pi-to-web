@@ -1,0 +1,61 @@
+# Gradle files
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.swp
+.DS_Store
+
+# Logs
+*.log
+
+# Operating system files
+Thumbs.db
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Kotlin specific
+*.class
+*.kotlin_metadata
+*.kotlin_module
+
+# JetBrains IDEs
+out/
+*.ipr
+*.iws
+*.idea/
+*.iml
+
+# Python-specific (CyberPi)
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pydistutils.cfg
+.env
+.venv/
+*.egg-info/
+*.egg
+*.coverage
+*.pytest_cache/
+.mypy_cache/
+
+# Environment and sensitive files
+.env
+*.key
+*.pem
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.swo
+*~
