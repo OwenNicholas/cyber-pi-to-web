@@ -20,6 +20,7 @@ dependencies {
     implementation("io.ktor:ktor-client-core:2.x.x") // Core Ktor client
     implementation("io.ktor:ktor-client-cio:2.x.x") 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.x.x")
+    implementation("io.ktor:ktor-server-websockets:2.x.x") // Use the latest version
 
     testImplementation("io.ktor:ktor-server-tests:2.3.3")
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.22")
