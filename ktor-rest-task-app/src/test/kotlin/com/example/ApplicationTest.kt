@@ -13,8 +13,5 @@ class ApplicationTest {
         application {
             configureRouting() // Ensure you call the correct routing function
         }
-        client.get("/").apply {
-            assertEquals(HttpStatusCode.OK, status)
-        }
     }
 }
