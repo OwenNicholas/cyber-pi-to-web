@@ -1,3 +1,5 @@
+package com.example
+
 import com.mongodb.ConnectionString
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
@@ -10,4 +12,5 @@ object MongoDBClient {
     private val database = client.getDatabase("message_db") // Database name
 
     val messageCollection = database.getCollection<Message>() // Collection for messages
+    val weatherCollection = database.getCollection<Weather>()
 }
