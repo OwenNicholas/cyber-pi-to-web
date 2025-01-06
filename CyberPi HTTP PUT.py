@@ -70,7 +70,7 @@ gettingConnection()
 @event.is_press('a')
 def is_joy_press():
     host = "192.168.18.79"
-    route = "8080"
+    route = "80"
     query = "/update_message/dht11"
     data = '{"value" : "78"}'
     socket_put(host, route, query, data)

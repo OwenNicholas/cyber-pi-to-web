@@ -66,7 +66,7 @@ gettingConnection()
 @event.is_press('a')
 def is_joy_press():
     host = "192.168.18.244"
-    route = "8080"
+    route = "80"
     query = "/get_message/3"
     parsing = "content"
     socket_patch(host, route, query, parsing)

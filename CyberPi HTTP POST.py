@@ -20,7 +20,7 @@ def socket_post(host, route, query, data):
         # Connect to the server
         try:
             cyberpi.display.show_label("Connecting to Server...", 12, "top_mid", index= 0)
-            sock.connect((str(host), str(route)))
+            sock.connect((str(host), route))
         except OSError as e:
         # Handle connection errors
             error_message = "Connection Error: " + str(e)
@@ -70,8 +70,8 @@ gettingConnection()
 
 @event.is_press('a')
 def is_joy_press():
-    host = "192.168.18.79"
-    route = "8080"
-    query = "/send_message"
-    data = '{"sensor": "dht11", "value" : "66"}'
+    host = "jsonplaceholder.typicode.com"
+    route = "80"
+    query = "/posts"
+    data = '{"title": "foo", "body" : "bar", "userId" : "1"}'
     socket_post(host, route, query, data)
