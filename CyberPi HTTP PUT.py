@@ -13,7 +13,7 @@ def gettingConnection():
     except:
         cyberpi.display.show_label("Connection Failed", 12, "center", index= 1)
 
-def socket_put(host, route, query, data):
+def http_put(host, route, query, data):
     # Create a socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -69,8 +69,10 @@ gettingConnection()
 
 @event.is_press('a')
 def is_joy_press():
-    host = "192.168.18.79"
+    host = "jsonplaceholder.typicode.com"
+    query = "/posts/1"
     route = "80"
-    query = "/update_message/dht11"
-    data = '{"value" : "78"}'
-    socket_put(host, route, query, data)
+    data = '{"title": "foot", "body" : "bars", "userId" : "1"}'
+    http_put(host, route, query, data)
+
+    
