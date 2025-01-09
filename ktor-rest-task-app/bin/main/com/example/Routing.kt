@@ -122,7 +122,7 @@ fun Application.configureRouting() {
                 e.printStackTrace()
                 call.respond(HttpStatusCode.BadRequest, "Invalid request payload. Ensure 'sensor' and 'value' are provided.")
             }
-        }git add .
+        }
 
         post("/send_weather"){
             try{
