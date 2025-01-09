@@ -123,6 +123,7 @@ fun Application.configureRouting() {
                 call.respond(HttpStatusCode.BadRequest, "Invalid request payload. Ensure 'sensor' and 'value' are provided.")
             }
         }
+        }
 
         post("/send_weather"){
             try{
