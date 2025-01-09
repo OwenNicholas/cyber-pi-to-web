@@ -17,12 +17,39 @@ import java.io.File
 val client = KMongo.createClient().coroutine
 val database = client.getDatabase("message_db") // Replace with your DB name
 val collection = database.getCollection<Message>("messages")
+val weatherCollection = database.getCollection<Weather>("weather")
+val requestLogs = mutableListOf<RequestLog>()
 
 @Serializable
 data class Message(val id: Int = 0, val sensor: String, val value: Int)
-
+@Serializable
+data class Weather(val id: Int = 0, val weather: String, val temperature: Int, val city: String, val country: String)
+@Serializable
+data class RequestLog(val method: String, val endpoint: String, val userAgent: String, val timestamp: Long){
+    // Generate the formatted log string
+    fun formattedLog(): String {
+        return "$userAgent sent a $method request to $endpoint"
+    }
+}
 fun Application.configureRouting() {
     routing {
+        intercept(ApplicationCallPipeline.Monitoring) {
+            val method = call.request.local.method.value
+            val endpoint = call.request.path()
+            val userAgent = call.request.headers["User-Agent"] ?: "Unknown"
+            val timestamp = System.currentTimeMillis()
+
+            // Add the request log to the list
+            requestLogs.add(RequestLog(method, endpoint, userAgent, timestamp))
+
+            proceed()
+        }
+
+        // Serve the logs as formatted strings
+        get("/logs") {
+            val formattedLogs = requestLogs.map { it.formattedLog() }
+            call.respond(formattedLogs)
+        }
         get("/"){
             val file = File("src/main/resources/static/dashboard.html")
             if (file.exists()) {
@@ -94,6 +121,37 @@ fun Application.configureRouting() {
                 println("Error: ${e.message}")
                 e.printStackTrace()
                 call.respond(HttpStatusCode.BadRequest, "Invalid request payload. Ensure 'sensor' and 'value' are provided.")
+            }
+        }
+
+        post("/send_weather"){
+            try{
+                val rawRequest = call.receiveText()
+                println("Raw request body: $rawRequest")
+
+                // Parse incoming JSON into Weather object
+                val weatherRequest = json.decodeFromString<Weather>(rawRequest)
+                val newId = (weatherCollection.find().toList().maxOfOrNull { it.id } ?: 0) + 1
+                val newWeather = Weather(newId, weatherRequest.weather, weatherRequest.temperature, weatherRequest.city, weatherRequest.country)
+
+                // Insert the weather data into MongoDB
+                weatherCollection.insertOne(newWeather)
+                println("Weather data successfully added: $newWeather")
+
+                call.respond(HttpStatusCode.Created, "Weather data added successfully with ID ${newWeather.id}")
+            } catch (e: Exception) {
+                println("Error: ${e.message}")
+                e.printStackTrace()
+                call.respond(HttpStatusCode.BadRequest, "Invalid request payload. Ensure 'weather' and 'temperature' are provided.")
+            }
+        }
+
+        get("/get_weather") {
+            val latestWeather = weatherCollection.find().toList().maxByOrNull { it.id } // Get the entry with the largest id
+            if (latestWeather != null) {
+                call.respond(latestWeather)
+            } else {
+                call.respond(HttpStatusCode.NotFound, "No weather data available.")
             }
         }
 

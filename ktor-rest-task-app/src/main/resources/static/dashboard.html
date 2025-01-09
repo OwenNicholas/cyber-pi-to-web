@@ -12,6 +12,24 @@
             background-color: #f4f4f9;
         }
 
+        .log-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .log-item p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .log-item strong {
+            color: #007bff;
+        }
+
         .dashboard-header {
             text-align: center;
             padding: 20px;
@@ -78,6 +96,70 @@
             color: #888;
             margin-top: 10px;
         }
+
+        #logs-container {
+            max-height: 300px; /* Set the maximum height */
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding: 10px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+    
+        #logs-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #logs-container::-webkit-scrollbar-thumb {
+            background-color: #cccccc;
+            border-radius: 4px;
+        }
+
+        #logs-container::-webkit-scrollbar-thumb:hover {
+            background-color: #aaaaaa;
+        }
+
+        .weather-card {
+            text-align: center;
+            background: url('weather-background.jpg') no-repeat center center;
+            background-size: cover;
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 10px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 250px; /* Adjust width as needed */
+        }
+
+        .weather-card .location {
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+            opacity: 0.8;
+        }
+
+        .weather-card .city {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .weather-card .temperature {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .weather-card .condition {
+            font-size: 1.2rem;
+            font-weight: normal;
+            margin: 0;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -96,26 +178,21 @@
 
         <!-- Calls -->
         <div class="card">
-            <h3>Calls</h3>
-            <div class="chart-container">
-                <canvas id="callsChart"></canvas>
-                <p class="small-text">% within SLA | % abandoned</p>
-            </div>
+            <h3>Weather Info</h3>
+            <div id="weather-container"></div> <!-- Dynamic content will go here -->
         </div>
 
-        <!-- Weather -->
+        <!-- GET/POST Logs -->
         <div class="card">
-            <h3>Weather</h3>
-            <div class="weather">
-                <h1>12°C</h1>
-                <p>Cloudy</p>
-                <p class="small-text">City</p>
+            <h3>Request Logs</h3>
+            <div id="logs-container">
+                <!-- Logs will load here dynamically -->
             </div>
         </div>
 
         <!-- Number of Sensors Monitoring -->
         <div class="card" id="sensors-monitoring">
-            <h3>No. of Sensors Monitoring:</h3>
+            <h3>No. of Messages:</h3>
             <p>Total: <strong id="sensor-count">Loading...</strong></p>
         </div>
 
@@ -172,9 +249,53 @@
             }
         }
 
+        async function fetchWeather() {
+            const response = await fetch('/get_weather');
+            if (response.ok) {
+                const weather = await response.json();
+                const container = document.getElementById('weather-container');
+
+                // Clear existing content
+                container.innerHTML = '';
+
+                // Display the latest weather
+                const weatherDiv = document.createElement('div');
+                weatherDiv.classList.add('weather');
+                weatherDiv.innerHTML = `
+                    <h2>${weather.city}, ${weather.country}</h2>
+                    <h1>${weather.temperature}°</h1>
+                    <p>${weather.weather}</p>
+                `;
+                container.appendChild(weatherDiv);
+            } else {
+                console.error('Failed to fetch weather data');
+            }
+        }
+        
+        async function fetchLogs() {
+            const response = await fetch('/logs');
+            const logs = await response.json(); // Fetch pre-formatted logs from the backend
+            const container = document.getElementById('logs-container');
+            container.innerHTML = ''; // Clear previous logs
+
+            if (logs.length === 0) {
+                container.innerHTML = '<p>No logs available</p>';
+                return;
+            }
+
+            logs.forEach((log, index) => {
+                const logDiv = document.createElement('div');
+                logDiv.classList.add('log-item');
+                logDiv.textContent = `${index + 1}. ${log}`;
+                container.appendChild(logDiv);
+            });
+        }
+
         // Fetch and display messages when the page loads
         fetchMessages();
         fetchSensorCount();
+        fetchWeather();
+        setInterval(fetchLogs, 5000);
 
         // Calls Chart
         const callsCtx = document.getElementById('callsChart').getContext('2d');
